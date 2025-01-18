@@ -1,4 +1,12 @@
 {
+  "compilerOptions": {
+    "target": "es5",
+    "module": "esnext",
+    "strict": true,
+    "jsx": "react-jsx", // Use the new JSX transform
+    "esModuleInterop": true
+  },
+  "include": ["./src/renderer/src/**/*"],
   "files": [],
   "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }]
 }
