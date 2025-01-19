@@ -20,13 +20,14 @@ import { RunReportPanel } from './components/RunReportPanel';
 import { Logo } from './components/Logo';
 import { fetchQuestions, mongodbObjectId, postQuestion } from './service/Question';
 import { NodeDetails } from './components/NodeDetails';
-import { AppNode, DebugNode, NodeSelectorInterface } from './nodes/types';
+import { AppNode, DebugNode, FileWriterNode, NodeSelectorInterface } from './nodes/types';
 import { LeftSideBar } from './components/LeftSideBar';
 import { NodeSelector } from './components/NodeSelector';
 import { DebugUtils } from './utils/debugUtils';
 import FeedBackFlow from './components/FeedBackFlow';
 import { postFeedBack } from './service/FeedBack';
 import { checkLocalStorageKey, setLocalStorageKeyValue } from './utils/localStorage';
+import { fileReaderNodeFn } from './service/ioNodes';
 
 const initialEdges = [
   { id: 'e1-2', source: 'a', target: 'c' },
@@ -34,8 +35,6 @@ const initialEdges = [
 ];
 
 const initialNodes: AppNode[] = [];
-
-const { pathSelect } = window.api;
 
 export default function App() {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
@@ -105,22 +104,35 @@ export default function App() {
     setDebugNode(newNode);
   };
 
-
   const addFileWriterNode = () => {
-    const newNode: DebugNode = {
-      id: `debug-${Math.random().toString(36).substring(2, 15)}`,
-      type: 'debug-node',
+    const fileWriterNode: FileWriterNode = {
+      id: mongodbObjectId(),
+      type: 'filewriter-node',
       position: { x: Math.random() * 500, y: Math.random() * 500 },
       data: {
-        label: 'Debug Node',
-        func: () => {},
-        debugUtils: new DebugUtils()
+        isNew: true,
+        func: fileReaderNodeFn
       }
     };
-    alert('NOT IMPLEMENTED')
-    // setNodes((nodes) => [...nodes, newNode as AppNode]);
+    setNodes((nodes) => [...nodes, fileWriterNode as any]);
+    // Assumed that IO nodes are used for current 'flow'
+    setPendingNodes((nodes) => [...nodes, fileWriterNode as any]);
   };
 
+  const addFileReaderNode = () => {
+    // const fileReaderNode: FileReaderNode = {
+    //   id: `debug-${Math.random().toString(36).substring(2, 15)}`,
+    //   type: 'filereader-node',
+    //   position: { x: Math.random() * 500, y: Math.random() * 500 },
+    //   data: {
+    //     label: 'Debug Node',
+    //     func: (data: string) => {},
+    //     debugUtils: new DebugUtils()
+    //   }
+    // };
+    alert('NOT IMPLEMENTED');
+    // setNodes((nodes) => [...nodes, newNode as AppNode]);
+  };
   const removeDebugNode = () => {
     setNodes((nodes) => nodes.filter((n) => n.id !== debugNode?.id));
     setDebugNode(null);
@@ -282,6 +294,12 @@ export default function App() {
             name: 'File Writer',
             func: addFileWriterNode,
             nodeId: '11',
+            favorite: false
+          },
+          {
+            name: 'File Reader',
+            func: addFileReaderNode,
+            nodeId: '12',
             favorite: false
           }
         ]

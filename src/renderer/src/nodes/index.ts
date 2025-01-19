@@ -4,6 +4,7 @@ import { AppNode } from './types';
 import { postQuestion, Question } from '../service/Question';
 import QuestionNodeComponent from './QuestionNode';
 import DebugNodeComponent from './DebugNode';
+import FileWriterNodeComponent from './FileWriterNode';
 
 export const initialNodes: AppNode[] = [];
 
@@ -55,5 +56,6 @@ export function formatQuestionsToNode(
 
 export const nodeTypes = {
   'question-node': QuestionNodeComponent,
-  'debug-node': DebugNodeComponent
+  'debug-node': DebugNodeComponent,
+  'filewriter-node': FileWriterNodeComponent
 } satisfies NodeTypes;

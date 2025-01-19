@@ -37,8 +37,10 @@ export const getExecutionOrder = (nodes: AppNode[]) => {
       }
     }
 
-    // Add current node if it's pending
-    if (node.data.pending_question) {
+    // Add current node if it's pending or file write
+    // TODO: This is hard coded, here, should just check whether is "pending" now
+    // Would add OOP to make this alot better but have no time atm
+    if (node.data.pending_question || (node.type as any) === 'filewriter-node') {
       visited.add(node.id);
       executionOrder.push(node);
     }

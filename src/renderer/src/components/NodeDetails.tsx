@@ -1,49 +1,49 @@
-import { QuestionNode } from '../nodes/types'
-import React, { useEffect, useState } from 'react'
-import { deleteQuestion } from '../service/Question'
+import { QuestionNode } from '../nodes/types';
+import React, { useEffect, useState } from 'react';
+import { deleteQuestion } from '../service/Question';
 
 interface NodeDetailsProps {
-  node: QuestionNode
-  onClose: (reload: boolean) => void
-  onAskQuestion: (node: QuestionNode, question: string) => void
-  onRemoveQuestion: (node: QuestionNode) => void
+  node: QuestionNode;
+  onClose: (reload: boolean) => void;
+  onAskQuestion: (node: QuestionNode, question: string) => void;
+  onRemoveQuestion: (node: QuestionNode) => void;
 }
 
 export function NodeDetails({ node, onClose, onAskQuestion, onRemoveQuestion }: NodeDetailsProps) {
-  const [newQuestion, setNewQuestion] = useState('')
-  const isAnswered = !!node.data.answer && node.data.answer !== ''
+  const [newQuestion, setNewQuestion] = useState('');
+  const isAnswered = !!node.data.answer && node.data.answer !== '';
 
   useEffect(() => {
     if (node.data.pending_question) {
-      setNewQuestion(node.data.pending_question || '')
+      setNewQuestion(node.data.pending_question || '');
     }
-  }, [node])
+  }, [node]);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (newQuestion.trim()) {
-      onAskQuestion(node, newQuestion.trim())
+      onAskQuestion(node, newQuestion.trim());
     } else {
-      onRemoveQuestion(node)
+      onRemoveQuestion(node);
     }
-  }
+  };
 
   const handleDelete = () => {
     if (node.id.startsWith('new-')) {
-      onClose(true)
+      onClose(true);
     }
     deleteQuestion(node.id)
       .then(() => {
-        onClose(true)
+        onClose(true);
       })
       .catch((error) => {
-        console.error('Error deleting question:', error)
-      })
-  }
+        console.error('Error deleting question:', error);
+      });
+  };
 
   // TODO handle this else where
-  if ((node.type as any) === 'debug-node') {
-    return
+  if ((node.type as any) !== 'question-node') {
+    return;
   }
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -89,5 +89,5 @@ export function NodeDetails({ node, onClose, onAskQuestion, onRemoveQuestion }: 
         )}
       </div>
     </div>
-  )
+  );
 }

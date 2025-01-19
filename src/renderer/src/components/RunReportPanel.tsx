@@ -21,7 +21,7 @@ export function RunReportPanel({
   pending_nodes,
   debugNode,
   nodes
-}: RunReportPanelProps) {
+}: RunReportPanelProps): JSX.Element {
   const [status, setStatus] = useState<Status>(Status.PENDING);
   const [doneNodes, setDoneNodes] = useState<{ node: QuestionNode; status: Status }[]>([]);
 
