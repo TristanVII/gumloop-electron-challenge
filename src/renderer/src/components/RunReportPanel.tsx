@@ -1,18 +1,18 @@
-import React, { useState } from 'react'
-import { AppNode, DebugNode, QuestionNode } from '../nodes/types'
-import ReportNode from './ReportNode'
-import { Status } from '../service/Question'
-import { DebugUtils } from '../utils/debugUtils'
-import { Edge } from '@xyflow/react'
-import { getExecutionOrder } from '../utils/topologicalSort'
+import { useState } from 'react';
+import { AppNode, DebugNode, QuestionNode } from '../nodes/types';
+import ReportNode from './ReportNode';
+import { Status } from '../service/Question';
+import { DebugUtils } from '../utils/debugUtils';
+import { Edge } from '@xyflow/react';
+import { getExecutionOrder } from '../utils/topologicalSort';
 
 interface RunReportPanelProps {
-  isOpen: boolean
-  onClose: () => void
-  pending_nodes: QuestionNode[]
-  debugNode: DebugNode | null
-  nodes: AppNode[]
-  edges: Edge[]
+  isOpen: boolean;
+  onClose: () => void;
+  pending_nodes: QuestionNode[];
+  debugNode: DebugNode | null;
+  nodes: AppNode[];
+  edges: Edge[];
 }
 
 export function RunReportPanel({
@@ -22,52 +22,52 @@ export function RunReportPanel({
   debugNode,
   nodes
 }: RunReportPanelProps) {
-  const [status, setStatus] = useState<Status>(Status.PENDING)
-  const [doneNodes, setDoneNodes] = useState<{ node: QuestionNode; status: Status }[]>([])
+  const [status, setStatus] = useState<Status>(Status.PENDING);
+  const [doneNodes, setDoneNodes] = useState<{ node: QuestionNode; status: Status }[]>([]);
 
-  console.log(getExecutionOrder(nodes), nodes)
+  console.log(getExecutionOrder(nodes), nodes);
   const onRun = async () => {
-    setStatus(Status.RUNNING)
-    let mediaRecorder: MediaRecorder | null = null
-    let dataUtils: DebugUtils | null = null
-    let debug_id: string | null = null
+    setStatus(Status.RUNNING);
+    let mediaRecorder: MediaRecorder | null = null;
+    let dataUtils: DebugUtils | null = null;
+    let debug_id: string | null = null;
 
     try {
       if (debugNode && debugNode.data.debugUtils) {
-        debug_id = `${debugNode.id}-${Date.now()}`
-        dataUtils = debugNode.data.debugUtils
-        dataUtils.setDebugId(debug_id)
-        mediaRecorder = await dataUtils.startScreenCapture()
-        await dataUtils.interceptFetch()
+        debug_id = `${debugNode.id}-${Date.now()}`;
+        dataUtils = debugNode.data.debugUtils;
+        dataUtils.setDebugId(debug_id);
+        mediaRecorder = await dataUtils.startScreenCapture();
+        await dataUtils.interceptFetch();
         // use flowid or smth
       }
 
-      const executionOrder = getExecutionOrder(nodes)
+      const executionOrder = getExecutionOrder(nodes);
 
       for (let i = 0; i < executionOrder.length; i++) {
-        const node = executionOrder[i]
+        const node = executionOrder[i];
         if (node.data?.func) {
           try {
-            await node.data.func(node, debug_id)
-            setDoneNodes((prev) => [...prev, { node, status: Status.COMPLETED }])
+            await node.data.func(node, debug_id);
+            setDoneNodes((prev) => [...prev, { node, status: Status.COMPLETED }]);
           } catch (error) {
-            setDoneNodes((prev) => [...prev, { node, status: Status.FAILED }])
-            break // Stop execution on failure
+            setDoneNodes((prev) => [...prev, { node, status: Status.FAILED }]);
+            break; // Stop execution on failure
           }
         }
       }
     } catch (error) {
-      setStatus(Status.FAILED)
-      console.error('Error in onRun:', error)
+      setStatus(Status.FAILED);
+      console.error('Error in onRun:', error);
     } finally {
-      setStatus(Status.COMPLETED)
+      setStatus(Status.COMPLETED);
       if (mediaRecorder && dataUtils) {
-        mediaRecorder.stop()
-        dataUtils.stopAndSaveTrafficLog()
-        dataUtils.downloadServerLogs(debug_id)
+        mediaRecorder.stop();
+        dataUtils.stopAndSaveTrafficLog();
+        dataUtils.downloadServerLogs(debug_id);
       }
     }
-  }
+  };
 
   return (
     <div
@@ -80,10 +80,10 @@ export function RunReportPanel({
           <button
             onClick={() => {
               if (status === Status.COMPLETED) {
-                window.location.reload()
+                window.location.reload();
               }
-              onClose()
-              setStatus(Status.PENDING)
+              onClose();
+              setStatus(Status.PENDING);
             }}
             className="text-gray-500 hover:text-gray-700 p-1"
           >
@@ -140,5 +140,5 @@ export function RunReportPanel({
         </div>
       </div>
     </div>
-  )
+  );
 }

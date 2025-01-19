@@ -1,6 +1,5 @@
-import React from 'react'
-import { QuestionNode } from '../nodes/types'
-import { Status } from '../service/Question'
+import { QuestionNode } from '../nodes/types';
+import { Status } from '../service/Question';
 
 export default function ReportNode({
   node,
@@ -8,10 +7,10 @@ export default function ReportNode({
   status,
   parent
 }: {
-  node: QuestionNode
-  index: number
-  status: Status
-  parent: QuestionNode | undefined
+  node: QuestionNode;
+  index: number;
+  status: Status;
+  parent: QuestionNode | undefined;
 }) {
   return (
     <div
@@ -39,5 +38,5 @@ export default function ReportNode({
         )}
       </div>
     </div>
-  )
+  );
 }

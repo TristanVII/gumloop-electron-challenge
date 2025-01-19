@@ -1,13 +1,11 @@
-import React from 'react'
-
 interface RunButtonProps {
-  onRun: () => void
+  onRun: () => void;
 }
 
-export function RunButton({ onRun }: RunButtonProps) {
+export function RunButton({ onRun }: RunButtonProps): JSX.Element {
   const runFlow = () => {
-    onRun()
-  }
+    onRun();
+  };
 
   return (
     <button
@@ -16,5 +14,5 @@ export function RunButton({ onRun }: RunButtonProps) {
     >
       Run Flow
     </button>
-  )
+  );
 }

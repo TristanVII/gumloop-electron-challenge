@@ -1,4 +1,4 @@
-import React, { memo } from 'react'
+import { memo } from 'react';
 
 const DebugNodeComponent = memo(({ data }: { data: any }) => {
   return (
@@ -19,8 +19,8 @@ const DebugNodeComponent = memo(({ data }: { data: any }) => {
     >
       <div style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '10px' }}>Debug Node</div>
     </div>
-  )
-})
+  );
+});
 
-DebugNodeComponent.displayName = 'DebugNodeComponent'
-export default DebugNodeComponent
+DebugNodeComponent.displayName = 'DebugNodeComponent';
+export default DebugNodeComponent;

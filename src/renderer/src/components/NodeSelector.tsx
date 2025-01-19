@@ -1,28 +1,29 @@
-import { NodeSelectorInterface, Category, NodeItem } from '../nodes/types'
-import React, { useState } from 'react'
-import { getFavoriteNodesLocalStorage, setFavoriteNodesLocalStorage } from '../utils/localStorage'
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { NodeSelectorInterface, Category, NodeItem } from '../nodes/types';
+import React, { useState } from 'react';
+import { getFavoriteNodesLocalStorage, setFavoriteNodesLocalStorage } from '../utils/localStorage';
 
 interface NodeSelectorProps {
-  allNodes: NodeSelectorInterface
-  removeDebugNode: () => void
+  allNodes: NodeSelectorInterface;
+  removeDebugNode: () => void;
 }
 
 // This component is the node selector: it handles the expansion and contraction of the node selector
-export function NodeSelector({ allNodes, removeDebugNode }: NodeSelectorProps) {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [isExpanded, setIsExpanded] = useState(true)
-  const [isTransitioning, setIsTransitioning] = useState(false)
+export function NodeSelector({ allNodes }: NodeSelectorProps) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [isExpanded, setIsExpanded] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const [favoriteNodesIds, setFavoriteNodesIds] = useState<Set<string>>(
     new Set(getFavoriteNodesLocalStorage())
-  )
-  const categoryNames = [...allNodes.categories.map((cat) => cat.name), 'All']
-  const [selectedTab, setSelectedTab] = useState('All')
+  );
+  const categoryNames = [...allNodes.categories.map((cat) => cat.name), 'All'];
+  const [selectedTab, setSelectedTab] = useState('All');
 
   // Filter function for nodes
   const filterNodes = (category: Category) => {
-    const searchLower = searchTerm.toLowerCase()
-    return category.nodes.filter((node) => node.name.toLowerCase().includes(searchLower))
-  }
+    const searchLower = searchTerm.toLowerCase();
+    return category.nodes.filter((node) => node.name.toLowerCase().includes(searchLower));
+  };
 
   // Filter function for categories
   const filterCategories = () => {
@@ -34,33 +35,33 @@ export function NodeSelector({ allNodes, removeDebugNode }: NodeSelectorProps) {
           cat.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
           // Check if any nodes in the category match the search
           cat.nodes.some((node) => node.name.toLowerCase().includes(searchTerm.toLowerCase())))
-    )
-  }
+    );
+  };
 
   // Handle close with transition
   const handleClose = () => {
-    setIsTransitioning(true)
-    setIsExpanded(false)
-  }
+    setIsTransitioning(true);
+    setIsExpanded(false);
+  };
 
   // Because transition looks ugly on open
   // Handle open without transition
   const handleOpen = () => {
-    setIsTransitioning(false)
-    setIsExpanded(true)
-  }
+    setIsTransitioning(false);
+    setIsExpanded(true);
+  };
 
   const handleToggleFavorite = (node: NodeItem, e: React.MouseEvent) => {
-    e.stopPropagation()
-    const newFavoriteNodes = new Set(favoriteNodesIds)
+    e.stopPropagation();
+    const newFavoriteNodes = new Set(favoriteNodesIds);
     if (newFavoriteNodes.has(node.nodeId)) {
-      newFavoriteNodes.delete(node.nodeId)
+      newFavoriteNodes.delete(node.nodeId);
     } else {
-      newFavoriteNodes.add(node.nodeId)
+      newFavoriteNodes.add(node.nodeId);
     }
-    setFavoriteNodesIds(newFavoriteNodes)
-    setFavoriteNodesLocalStorage(Array.from(newFavoriteNodes))
-  }
+    setFavoriteNodesIds(newFavoriteNodes);
+    setFavoriteNodesLocalStorage(Array.from(newFavoriteNodes));
+  };
 
   return (
     <div
@@ -109,9 +110,9 @@ export function NodeSelector({ allNodes, removeDebugNode }: NodeSelectorProps) {
           {/* Scrollable Categories */}
           <div className="space-y-4 overflow-y-auto flex-grow">
             {filterCategories().map((category) => {
-              let filteredNodes = filterNodes(category)
+              let filteredNodes = filterNodes(category);
               if (category.name === 'Favorite') {
-                filteredNodes = filteredNodes.filter((node) => favoriteNodesIds.has(node.nodeId))
+                filteredNodes = filteredNodes.filter((node) => favoriteNodesIds.has(node.nodeId));
               }
 
               return (
@@ -156,7 +157,7 @@ export function NodeSelector({ allNodes, removeDebugNode }: NodeSelectorProps) {
                     )}
                   </div>
                 </div>
-              )
+              );
             })}
           </div>
         </>
@@ -170,5 +171,5 @@ export function NodeSelector({ allNodes, removeDebugNode }: NodeSelectorProps) {
         </button>
       )}
     </div>
-  )
+  );
 }

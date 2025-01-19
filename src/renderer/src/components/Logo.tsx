@@ -1,5 +1,3 @@
-import React from 'react'
-
 export function Logo({ toggleFeedBackFlow }: { toggleFeedBackFlow: () => void }) {
   return (
     <>
@@ -12,5 +10,5 @@ export function Logo({ toggleFeedBackFlow }: { toggleFeedBackFlow: () => void })
         />
       </div>
     </>
-  )
+  );
 }

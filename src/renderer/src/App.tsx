@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   ReactFlow,
   Background,
@@ -9,63 +9,69 @@ import {
   Node,
   Panel,
   addEdge
-} from '@xyflow/react'
+} from '@xyflow/react';
 
-import '@xyflow/react/dist/style.css'
+import '@xyflow/react/dist/style.css';
 
-import { formatQuestionsToNode, nodeTypes } from './nodes'
-import { edgeTypes } from './edges'
-import { RunButton } from './components/RunButton'
-import { RunReportPanel } from './components/RunReportPanel'
-import { Logo } from './components/Logo'
-import { fetchQuestions, mongodbObjectId, postQuestion } from './service/Question'
-import { NodeDetails } from './components/NodeDetails'
-import { AppNode, DebugNode, NodeSelectorInterface } from './nodes/types'
-import { LeftSideBar } from './components/LeftSideBar'
-import { NodeSelector } from './components/NodeSelector'
-import { DebugUtils } from './utils/debugUtils'
-import FeedBackFlow from './components/FeedBackFlow'
-import { postFeedBack } from './service/FeedBack'
-import { checkLocalStorageKey, setLocalStorageKeyValue } from './utils/localStorage'
+import { formatQuestionsToNode, nodeTypes } from './nodes';
+import { edgeTypes } from './edges';
+import { RunButton } from './components/RunButton';
+import { RunReportPanel } from './components/RunReportPanel';
+import { Logo } from './components/Logo';
+import { fetchQuestions, mongodbObjectId, postQuestion } from './service/Question';
+import { NodeDetails } from './components/NodeDetails';
+import { AppNode, DebugNode, NodeSelectorInterface } from './nodes/types';
+import { LeftSideBar } from './components/LeftSideBar';
+import { NodeSelector } from './components/NodeSelector';
+import { DebugUtils } from './utils/debugUtils';
+import FeedBackFlow from './components/FeedBackFlow';
+import { postFeedBack } from './service/FeedBack';
+import { checkLocalStorageKey, setLocalStorageKeyValue } from './utils/localStorage';
 
 const initialEdges = [
   { id: 'e1-2', source: 'a', target: 'c' },
   { id: 'e2-3', source: 'c', target: 'd' }
-]
+];
 
-const initialNodes: AppNode[] = []
+const initialNodes: AppNode[] = [];
+
+const { pathSelect } = window.api;
 
 export default function App() {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes)
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges)
-  const [isPanelOpen, setIsPanelOpen] = useState(false)
-  const [userId, setUserId] = useState('')
-  const [selectedNode, setSelectedNode] = useState<AppNode | null>(null)
-  const [pending_nodes, setPendingNodes] = useState<AppNode[]>([])
-  const [debugNode, setDebugNode] = useState<DebugNode | null>(null)
-  const [isFeedBackFlowOpen, setIsFeedBackFlowOpen] = useState(false)
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [userId, setUserId] = useState('');
+  const [selectedNode, setSelectedNode] = useState<AppNode | null>(null);
+  const [pending_nodes, setPendingNodes] = useState<AppNode[]>([]);
+  const [debugNode, setDebugNode] = useState<DebugNode | null>(null);
+  const [isFeedBackFlowOpen, setIsFeedBackFlowOpen] = useState(false);
   useEffect(() => {
     async function fetchInitNodes() {
-      const id = checkLocalStorageKey('gumloop-userId')
-      if (!id) {
-        setLocalStorageKeyValue('gumloop-userId', Math.random().toString(36).substring(2, 15))
+      try {
+        const id = checkLocalStorageKey('gumloop-userId');
+        if (!id) {
+          setLocalStorageKeyValue('gumloop-userId', Math.random().toString(36).substring(2, 15));
+        }
+        setUserId(id);
+        const questions = await fetchQuestions(userId);
+        const { appNodes, edges } = formatQuestionsToNode(questions, userId);
+        setNodes(appNodes);
+        setEdges(edges);
+      } catch (error) {
+        console.error('Error in fetchInitNodes:', error);
       }
-      setUserId(id)
-      const questions = await fetchQuestions(userId)
-      const { appNodes, edges } = formatQuestionsToNode(questions, userId)
-      setNodes(appNodes)
-      setEdges(edges)
     }
-    fetchInitNodes()
-  }, [userId])
+    fetchInitNodes();
+  }, [userId]);
 
   const onNodeClick = (_: React.MouseEvent, node: Node) => {
-    setSelectedNode(node as AppNode)
-  }
+    setSelectedNode(node as AppNode);
+  };
 
   const onRun = () => {
-    setIsPanelOpen(true)
-  }
+    setIsPanelOpen(true);
+  };
 
   const addNewNode = () => {
     const newNode: AppNode = {
@@ -79,9 +85,9 @@ export default function App() {
         answer: '',
         func: (node, debug_id) => postQuestion(userId, node, debug_id)
       }
-    }
-    setNodes((nodes) => [...nodes, newNode])
-  }
+    };
+    setNodes((nodes) => [...nodes, newNode]);
+  };
 
   const addDebugNode = () => {
     const newNode: DebugNode = {
@@ -93,63 +99,79 @@ export default function App() {
         func: () => {},
         debugUtils: new DebugUtils()
       }
-    }
+    };
     // TODO: hack for now
-    setNodes((nodes) => [...nodes, newNode as AppNode])
-    setDebugNode(newNode)
-  }
+    setNodes((nodes) => [...nodes, newNode as AppNode]);
+    setDebugNode(newNode);
+  };
+
+
+  const addFileWriterNode = () => {
+    const newNode: DebugNode = {
+      id: `debug-${Math.random().toString(36).substring(2, 15)}`,
+      type: 'debug-node',
+      position: { x: Math.random() * 500, y: Math.random() * 500 },
+      data: {
+        label: 'Debug Node',
+        func: () => {},
+        debugUtils: new DebugUtils()
+      }
+    };
+    alert('NOT IMPLEMENTED')
+    // setNodes((nodes) => [...nodes, newNode as AppNode]);
+  };
 
   const removeDebugNode = () => {
-    setNodes((nodes) => nodes.filter((n) => n.id !== debugNode?.id))
-    setDebugNode(null)
-  }
+    setNodes((nodes) => nodes.filter((n) => n.id !== debugNode?.id));
+    setDebugNode(null);
+  };
 
   const handleAskQuestion = (node: AppNode, question: string) => {
     const newNodes = nodes.map((n) =>
       n.id === node.id ? { ...n, data: { ...n.data, pending_question: question } } : n
-    )
-    setNodes(newNodes)
-    setPendingNodes([...newNodes.filter((n) => n.data.pending_question)])
-  }
+    );
+    setNodes(newNodes);
+    setPendingNodes([...newNodes.filter((n) => n.data.pending_question)]);
+  };
 
   const handleRemoveQuestion = (node: AppNode) => {
     setNodes((nodes) =>
       nodes.map((n) => (n.id === node.id ? { ...n, data: { ...n.data, pending_question: '' } } : n))
-    )
-    setPendingNodes((nodes) => nodes.filter((n) => n.id !== node.id))
-  }
+    );
+    setPendingNodes((nodes) => nodes.filter((n) => n.id !== node.id));
+  };
 
   // Kinda hard coded for now
   const submitFeedBack = (feedback: {
-    question1: string
-    question2: string
-    question3: string
+    question1: string;
+    question2: string;
+    question3: string;
   }) => {
     postFeedBack(feedback, userId)
       .then(() => {
-        console.log('Feedback submitted')
+        console.log('Feedback submitted');
       })
       .catch(() => {
-        console.log('Failed to submit feedback')
-      })
+        console.log('Failed to submit feedback');
+      });
     // close anyways
-    setIsFeedBackFlowOpen(false)
-  }
+    setIsFeedBackFlowOpen(false);
+  };
 
   const toggleFeedBackFlow = () => {
-    setIsFeedBackFlowOpen(!isFeedBackFlowOpen)
-  }
+    setIsFeedBackFlowOpen(!isFeedBackFlowOpen);
+  };
 
   const onConnect = useCallback(
     (params: any) => {
       // top node / parent
-      const sourceNode = nodes.find((node) => node.id === params.source)
+      const sourceNode = nodes.find((node) => node.id === params.source);
       // bottom node / child
-      const targetNode = nodes.find((node) => node.id === params.target)
+      const targetNode = nodes.find((node) => node.id === params.target);
 
       // Prevent connection if both nodes are root nodes
       if (!sourceNode || !targetNode || (sourceNode.data.isRoot && targetNode.data.isRoot)) {
-        return
+        return;
       }
       const nodeWithUpdatedParent = {
         ...targetNode,
@@ -157,16 +179,16 @@ export default function App() {
           ...targetNode.data,
           parent: sourceNode?.id
         }
-      }
+      };
 
       setNodes((nodes) =>
         nodes.map((n) => (n.id === nodeWithUpdatedParent.id ? nodeWithUpdatedParent : n))
-      )
+      );
 
-      setEdges((eds) => addEdge({ ...params, animated: true }, eds))
+      setEdges((eds) => addEdge({ ...params, animated: true }, eds));
     },
     [setEdges, nodes, setNodes]
-  )
+  );
 
   // Mock fake nodes VERY BAD WILL NEED TO CHANGE THIS LATER
   // BTW this should not be an object. I made it an interface
@@ -253,6 +275,18 @@ export default function App() {
         ]
       },
       {
+        name: 'I/O Nodes',
+        description: 'Nodes that interact with your file system directly',
+        nodes: [
+          {
+            name: 'File Writer',
+            func: addFileWriterNode,
+            nodeId: '11',
+            favorite: false
+          }
+        ]
+      },
+      {
         name: 'Favorite',
         description: 'Favorite nodes',
         nodes: [
@@ -320,7 +354,7 @@ export default function App() {
         ]
       }
     ]
-  }
+  };
 
   return (
     <ReactFlow
@@ -358,9 +392,9 @@ export default function App() {
         <NodeDetails
           node={selectedNode}
           onClose={(reload) => {
-            setSelectedNode(null)
+            setSelectedNode(null);
             if (reload) {
-              window.location.reload()
+              window.location.reload();
             }
           }}
           onAskQuestion={handleAskQuestion}
@@ -368,5 +402,5 @@ export default function App() {
         />
       )}
     </ReactFlow>
-  )
+  );
 }
