@@ -25,7 +25,6 @@ export function RunReportPanel({
   const [status, setStatus] = useState<Status>(Status.PENDING);
   const [doneNodes, setDoneNodes] = useState<{ node: QuestionNode; status: Status }[]>([]);
 
-  console.log(getExecutionOrder(nodes), nodes);
   const onRun = async () => {
     setStatus(Status.RUNNING);
     let mediaRecorder: MediaRecorder | null = null;
@@ -119,7 +118,7 @@ export function RunReportPanel({
                   index={index}
                   key={index}
                   status={status}
-                  parent={nodes.find((n) => n.id === node.data.parent)}
+                  nodes={nodes}
                 />
               ))}
             </div>
@@ -132,7 +131,7 @@ export function RunReportPanel({
                   index={index}
                   key={index}
                   status={status}
-                  parent={nodes.find((n) => n.id === node.data.parent)}
+                  nodes={nodes}
                 />
               ))}
             </div>

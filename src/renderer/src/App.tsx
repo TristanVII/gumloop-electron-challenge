@@ -120,18 +120,7 @@ export default function App() {
   };
 
   const addFileReaderNode = () => {
-    // const fileReaderNode: FileReaderNode = {
-    //   id: `debug-${Math.random().toString(36).substring(2, 15)}`,
-    //   type: 'filereader-node',
-    //   position: { x: Math.random() * 500, y: Math.random() * 500 },
-    //   data: {
-    //     label: 'Debug Node',
-    //     func: (data: string) => {},
-    //     debugUtils: new DebugUtils()
-    //   }
-    // };
     alert('NOT IMPLEMENTED');
-    // setNodes((nodes) => [...nodes, newNode as AppNode]);
   };
   const removeDebugNode = () => {
     setNodes((nodes) => nodes.filter((n) => n.id !== debugNode?.id));
@@ -185,6 +174,7 @@ export default function App() {
       if (!sourceNode || !targetNode || (sourceNode.data.isRoot && targetNode.data.isRoot)) {
         return;
       }
+      console.log('Source: ', sourceNode,'target: ', targetNode)
       const nodeWithUpdatedParent = {
         ...targetNode,
         data: {
@@ -311,62 +301,62 @@ export default function App() {
           {
             name: 'Ask AI',
             func: addNewNode,
-            nodeId: '1',
+            nodeId: '13',
             favorite: false
           },
           {
             name: 'Summarizer',
             func: () => {},
-            nodeId: '2',
+            nodeId: '14',
             favorite: false
           },
           {
             name: 'Categorizer',
             func: () => {},
-            nodeId: '3',
+            nodeId: '15',
             favorite: false
           },
           {
             name: 'Scorer',
             func: () => {},
-            nodeId: '4',
+            nodeId: '16',
             favorite: false
           },
           {
             name: 'Extractor',
             func: () => {},
-            nodeId: '5',
+            nodeId: '17',
             favorite: false
           },
           {
             name: 'Debug Node',
             func: addDebugNode,
-            nodeId: '8',
+            nodeId: '18',
             favorite: false
           },
           {
             name: 'Input',
             func: () => {},
-            nodeId: '9',
+            nodeId: '19',
             favorite: false
           },
           {
             name: 'Datetime',
             func: () => {},
-            nodeId: '10',
+            nodeId: '20',
             favorite: false
           },
 
           {
             name: 'notification1',
             func: () => {},
-            nodeId: '6',
+            nodeId: '21',
             favorite: false
           },
           {
             name: 'notification2',
             func: () => {},
-            nodeId: '7',
+            nodeId: '22',
             favorite: false
           }
         ]

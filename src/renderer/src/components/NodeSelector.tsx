@@ -111,8 +111,16 @@ export function NodeSelector({ allNodes }: NodeSelectorProps) {
           <div className="space-y-4 overflow-y-auto flex-grow">
             {filterCategories().map((category) => {
               let filteredNodes = filterNodes(category);
+
+              // Fix this code
               if (category.name === 'Favorite') {
-                filteredNodes = filteredNodes.filter((node) => favoriteNodesIds.has(node.nodeId));
+                filteredNodes = [];
+                allNodes.categories.forEach(cat => {
+                  filteredNodes = [
+                    ...filteredNodes,
+                    ...cat.nodes.filter((node) => favoriteNodesIds.has(node.nodeId))
+                  ];
+                });
               }
 
               return (

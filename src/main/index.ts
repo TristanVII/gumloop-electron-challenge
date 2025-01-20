@@ -1,10 +1,17 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron';
+import { app, shell, BrowserWindow, ipcMain, Tray, Menu } from 'electron';
 import { join } from 'path';
 import { electronApp, optimizer, is } from '@electron-toolkit/utils';
-import { dialog } from 'electron'
-import icon from '../../resources/icon.png?asset';
+import { dialog } from 'electron';
 
 // Register IPC handlers before window creation
+
+const getIcon = (): string => {
+  if (is.dev) {
+    return join(__dirname, '../../resources/icon.icns');
+  } else {
+    return join(process.resourcesPath, 'icon.icns');
+  }
+};
 
 function createWindow(): void {
   // Create the browser window.
@@ -13,7 +20,7 @@ function createWindow(): void {
     height: 670,
     show: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
+    icon: getIcon(),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -91,7 +98,7 @@ const exposeElectronAPI = (): void => {
 
   ipcMain.handle('pathSelect', async () => {
     const result = await dialog.showOpenDialog({
-      properties:['openDirectory']
+      properties: ['openDirectory']
     });
     if (result.canceled) {
       return null;
@@ -102,4 +109,58 @@ const exposeElectronAPI = (): void => {
 };
 
 // Expose Electron when App is ready
-app.on('ready', exposeElectronAPI);
+app.on('ready', () => {
+  exposeElectronAPI();
+  createTray();
+  // Set the dock icon for macOS
+  if (isMacOS()) {
+    app.dock.setIcon(getIcon());
+  }
+});
+
+const createOrFocusWindow = (): void => {
+  console.log('IMPLEMENT');
+};
+
+const quitApplication = (): void => {
+  app.quit();
+};
+
+const createTray = (): void => {
+  let trayIcon;
+  if (is.dev) {
+    // In development, use the path relative to project root
+    trayIcon = join(__dirname, '../../resources/tray.png');
+  } else {
+    // In production, use the path relative to the app resources
+    trayIcon = join(process.resourcesPath, 'tray.png');
+  }
+
+  try {
+    const tray = new Tray(trayIcon);
+    const contextMenu = Menu.buildFromTemplate([
+      { label: 'Open Gumloop', type: 'normal', click: createOrFocusWindow },
+      {
+        label: 'Quit',
+        type: 'normal',
+        click: quitApplication
+      }
+    ]);
+    tray.setToolTip('Gumloop Desktop Application');
+    tray.setContextMenu(contextMenu);
+  } catch (error) {
+    console.error('Failed to create tray:', error);
+  }
+};
+
+function isMacOS(): boolean {
+  return process.platform === 'darwin';
+}
+
+// function isWin(): boolean {
+//   return process.platform === 'win32';
+// }
+//
+// function isLinux(): boolean {
+//   return process.platform === 'linux';
+// }
