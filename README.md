@@ -1,4 +1,5 @@
 # gumloop-electron
+Follow-up project for https://github.com/TristanVII/challengeGL
 
 An Electron application with React and TypeScript
 
